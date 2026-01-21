@@ -6,15 +6,8 @@ return {
     event = "InsertEnter",
   },
 
-  -- CodeCompanion AI assistant
-  {
-    "olimorris/codecompanion.nvim",
-    event = "VeryLazy",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-  },
+  -- CodeCompanion AI assistant (configured in ai-chat.lua with Ollama)
+  -- Moved to lua/plugins/ai-chat.lua for better organization
 
   -- Monokai Pro theme
   {
