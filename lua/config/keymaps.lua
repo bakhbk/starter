@@ -3,3 +3,4 @@
 -- Add any additional keymaps here
 local map = LazyVim.safe_keymap_set
 map("i", "jj", "<ESC>")
+
