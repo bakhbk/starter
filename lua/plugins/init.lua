@@ -1,207 +1,151 @@
--- since this is just an example spec, don't actually load anything here and return an empty spec
--- stylua: ignore
--- if true then return {} end
--- every spec file under the "plugins" directory will be loaded automatically by lazy.nvim
---
--- In your plugin files, you can:
--- * add extra plugins
--- * disable/enabled LazyVim plugins
--- * override the configuration of LazyVim plugins
-return { -- ai code generator
-    {'olimorris/codecompanion.nvim'}, -- add flutter
-    {
-      "mfussenegger/nvim-dap",  -- Debug Adapter Protocol
+return {{'olimorris/codecompanion.nvim'}, {"github/copilot.vim"}, {"loctvl842/monokai-pro.nvim"}, {
+    "LazyVim/LazyVim",
+    opts = {
+        colorscheme = "monokai-pro"
+    }
+}, {
+    "folke/trouble.nvim",
+    opts = {
+        use_diagnostic_signs = true
     },
-    { "github/copilot.vim"},
-    {
-        'nvim-flutter/flutter-tools.nvim',
-        lazy = false,
-        dependencies = {
-            'nvim-lua/plenary.nvim', 'stevearc/dressing.nvim' -- optional for vim.ui.select
-        },
-        config = true
-    }, -- add terminal
-    {{'akinsho/toggleterm.nvim', version = "*", config = true}}, -- add gruvbox
-    --  { "ellisonleao/gruvbox.nvim" },
-    -- https://github.com/loctvl842/monokai-pro.nvim
-    {"loctvl842/monokai-pro.nvim"}, -- Configure LazyVim to load gruvbox
-    {
-        "LazyVim/LazyVim",
-        opts = {
-            --      colorscheme = "gruvbox",
-            colorscheme = "monokai-pro"
-        }
-    }, -- change trouble config
-    {
-        "folke/trouble.nvim",
-        -- opts will be merged with the parent spec
-        opts = {use_diagnostic_signs = true}
-    }, -- disable trouble
-    {"folke/trouble.nvim", enabled = false}, -- override nvim-cmp and add cmp-emoji
-    {
-        "hrsh7th/nvim-cmp",
-        dependencies = {"hrsh7th/cmp-emoji"},
-        -- @param opts cmp.ConfigSchema
-        opts = function(_, opts)
-            table.insert(opts.sources, {name = "emoji"})
-        end
-    }, -- change some telescope options and a keymap to browse plugin files
-    {
-        "nvim-telescope/telescope.nvim",
-        keys = { -- add a keymap to browse plugin files
-            -- stylua: ignore
-            {
-                "<leader>fp",
-                function()
-                    require("telescope.builtin").find_files({
-                        cwd = require("lazy.core.config").options.root
-                    })
-                end,
-                desc = "Find Plugin File"
-            }
-        },
-        -- change some options
-        opts = {
-            defaults = {
-                layout_strategy = "horizontal",
-                layout_config = {prompt_position = "top"},
-                sorting_strategy = "ascending",
-                winblend = 0
-            }
-        }
-    }, -- add pyright to lspconfig
-    {
-        "neovim/nvim-lspconfig",
-        opts = {
-            -- @type lspconfig.options
-            servers = {
-                -- pyright will be automatically installed with mason and loaded with lspconfig
-                pyright = {}
-            }
-        }
-    }, -- add tsserver and setup with typescript.nvim instead of lspconfig
-    {
-        "neovim/nvim-lspconfig",
-        dependencies = {
-            "jose-elias-alvarez/typescript.nvim",
-            init = function()
-                require("lazyvim.util").lsp.on_attach(function(_, buffer)
-                    -- stylua: ignore
-                    vim.keymap.set("n", "<leader>co",
-                                   "TypescriptOrganizeImports",
-                                   {buffer = buffer, desc = "Organize Imports"})
-                    vim.keymap.set("n", "<leader>cR", "TypescriptRenameFile",
-                                   {desc = "Rename File", buffer = buffer})
-                end)
-            end
-        },
-        ---@class PluginLspOpts
-        opts = {
-            -- @type lspconfig.options
-            servers = {
-                -- tsserver will be automatically installed with mason and loaded with lspconfig
-                tsserver = {}
-            },
-            -- you can do any additional lsp server setup here
-            -- return true if you don't want this server to be setup with lspconfig
-            -- @type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
-            setup = {
-                -- example to setup with typescript.nvim
-                tsserver = function(_, opts)
-                    require("typescript").setup({server = opts})
-                    return true
-                end
-                -- Specify * to use this function as a fallback for any server
-                -- ["*"] = function(server, opts) end,
-            }
-        }
-    }, -- for typescript, LazyVim also includes extra specs to properly setup lspconfig,
-    -- treesitter, mason and typescript.nvim. So instead of the above, you can use:
-    {import = "lazyvim.plugins.extras.lang.typescript"}, -- add more treesitter parsers
-    {
-        "nvim-treesitter/nvim-treesitter",
-        opts = {
-            ensure_installed = {
-                "bash", "html", "javascript", "json", "lua", "markdown",
-                "markdown_inline", "python", "query", "regex", "tsx",
-                "typescript", "vim", "dart", "yaml"
-            }
-        }
-    }, -- since `vim.tbl_deep_extend`, can only merge tables and not lists, the code above
-    -- would overwrite `ensure_installed` with the new value.
-    -- If you'd rather extend the default config, use the code below instead:
-    {
-        "nvim-treesitter/nvim-treesitter",
-        opts = function(_, opts)
-            -- add tsx and treesitter
-            vim.list_extend(opts.ensure_installed, {"tsx", "typescript"})
-        end
-    }, -- the opts function can also be used to change the default opts:
-    {
-        "nvim-lualine/lualine.nvim",
-        event = "VeryLazy",
-        opts = function(_, opts)
-            table.insert(opts.sections.lualine_x, {function()
-                return "😄"
-            end})
-        end
-    }, -- or you can return new options to override all the defaults
-    {
-        "nvim-lualine/lualine.nvim",
-        event = "VeryLazy",
-        opts = function()
-            return { --[[add your custom lualine config here]] }
-        end
-    }, -- use mini.starter instead of alpha
-    {import = "lazyvim.plugins.extras.ui.mini-starter"}, -- add jsonls and schemastore packages, and setup treesitter for json, json5 and jsonc
-    {import = "lazyvim.plugins.extras.lang.json"}, -- add any tools you want to have installed below
-    {
-        "williamboman/mason.nvim",
-        opts = {ensure_installed = {"stylua", "shellcheck", "shfmt", "flake8"}}
+    keys = {{
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)"
     }, {
-
-        "stevearc/conform.nvim",
-        opts = {
-            formatters_by_ft = {
-                lua = {"stylua"},
-                python = {"black"},
-                jsx = {"prettier"},
-                -- JavaScript and related
-                javascript = {"prettier"},
-                javascriptreact = {"prettier"}, -- JSX
-                typescript = {"prettier"},
-                typescriptreact = {"prettier"}, -- TSX
-                flow = {"prettier"}, -- Flow
-
-                -- Frameworks
-                vue = {"prettier"}, -- Vue
-                angular = {"prettier"}, -- Angular (uses HTML/TypeScript)
-
-                -- Stylesheets
-                css = {"prettier"},
-                less = {"prettier"},
-                scss = {"prettier"},
-
-                -- Templates
-                html = {"prettier"},
-                handlebars = {"prettier"}, -- Ember/Handlebars
-
-                -- Data formats
-                json = {"prettier"},
-                yaml = {"prettier"},
-                graphql = {"prettier"},
-
-                -- Markdown
-                markdown = {"prettier"}, -- Standard Markdown
-                mdx = {"prettier"} -- MDX v1
-                -- Add more file types and formatters here
+        "<leader>xX",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)"
+    }, {
+        "<leader>xL",
+        "<cmd>Trouble loclist toggle<cr>",
+        desc = "Location List (Trouble)"
+    }, {
+        "<leader>xQ",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)"
+    }}
+}, {
+    "hrsh7th/nvim-cmp",
+    dependencies = {"hrsh7th/cmp-emoji", "L3MON4D3/LuaSnip", "saadparwaiz1/cmp_luasnip"},
+    opts = function(_, opts)
+        local luasnip = require("luasnip")
+        opts.snippet = {
+            expand = function(args)
+                luasnip.lsp_expand(args.body)
+            end
+        }
+        table.insert(opts.sources, {
+            name = "luasnip"
+        })
+        table.insert(opts.sources, {
+            name = "emoji"
+        })
+    end
+}, {
+    "nvim-telescope/telescope.nvim",
+    keys = { -- add a keymap to browse plugin files
+    -- stylua: ignore
+    {
+        "<leader>fp",
+        function()
+            require("telescope.builtin").find_files({
+                cwd = require("lazy.core.config").options.root
+            })
+        end,
+        desc = "Find Plugin File"
+    }},
+    -- change some options
+    opts = {
+        defaults = {
+            layout_strategy = "horizontal",
+            layout_config = {
+                prompt_position = "top"
             },
-            -- Optional: Custom formatter configurations
-            formatters = {
-                prettier = {
-                    args = {"--stdin-filepath", "$FILENAME"} -- Example args for Prettier
+            sorting_strategy = "ascending",
+            winblend = 0
+        }
+    }
+}, {
+    "neovim/nvim-lspconfig",
+    opts = {
+        servers = {
+            pyright = {}
+        }
+    }
+}, {
+    import = "lazyvim.plugins.extras.lang.typescript"
+}, {
+    "nvim-treesitter/nvim-treesitter",
+    opts = {
+        ensure_installed = {"bash", "html", "javascript", "json", "lua", "markdown", "markdown_inline", "python",
+                            "query", "regex", "tsx", "typescript", "vim", "dart", "yaml"}
+    }
+}, {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    opts = function(_, opts)
+        table.insert(opts.sections.lualine_x, {function()
+            return "😄"
+        end})
+
+        -- Add navic breadcrumbs to winbar
+        opts.winbar = {
+            lualine_c = {{
+                "navic",
+                color_correction = "dynamic",
+                navic_opts = {
+                    separator = " > "
                 }
+            }}
+        }
+        opts.inactive_winbar = {
+            lualine_c = {"filename"}
+        }
+    end
+}, {
+    import = "lazyvim.plugins.extras.ui.mini-starter"
+}, {
+    import = "lazyvim.plugins.extras.lang.json"
+}, {
+    "mason-org/mason.nvim",
+    opts = {
+        ensure_installed = {"stylua", "shellcheck", "shfmt", "flake8", "prettier", "black"}
+    }
+}, {
+
+    "stevearc/conform.nvim",
+    opts = {
+        formatters_by_ft = {
+            dart = {"dart_format"},
+            lua = {"stylua"},
+            python = {"black"},
+            jsx = {"prettier"},
+            javascript = {"prettier"},
+            javascriptreact = {"prettier"},
+            typescript = {"prettier"},
+            typescriptreact = {"prettier"},
+            flow = {"prettier"},
+            vue = {"prettier"},
+            angular = {"prettier"},
+            css = {"prettier"},
+            less = {"prettier"},
+            scss = {"prettier"},
+            html = {"prettier"},
+            handlebars = {"prettier"},
+            json = {"prettier"},
+            yaml = {"prettier"},
+            graphql = {"prettier"},
+            markdown = {"prettier"},
+            mdx = {"prettier"}
+        },
+        formatters = {
+            dart_format = {
+                timeout_ms = 3000
+            },
+            prettier = {
+                args = {"--stdin-filepath", "$FILENAME"}
             }
         }
     }
-}
+}}
