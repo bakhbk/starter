@@ -8,8 +8,8 @@ return {
 
     -- Extend spec with custom groups
     vim.list_extend(opts.spec, {
-      -- Main groups
-      { "<leader><leader>", desc = "Command Palette", icon = "" },
+      -- Commands search (in file group to avoid conflicts)
+      { "<leader>fC", desc = "Find Commands", icon = "" },
 
       -- Flutter operations (moved to <leader>F to avoid conflict)
       { "<leader>F", group = "flutter", icon = "" },
@@ -24,10 +24,8 @@ return {
       { "<leader>FL", desc = "Clear Log", icon = "" },
       { "<leader>Fp", desc = "Pub Get", icon = "󰏗" },
 
-      -- Symbol/Search operations
-      { "<leader>s", group = "search/symbols", icon = "" },
-      { "<leader>ss", desc = "Workspace Symbols", icon = "" },
-      { "<leader>so", desc = "Document Symbols", icon = "" },
+      -- Symbol/Search operations (LazyVim already has <leader>s group)
+      { "<leader>sS", desc = "Workspace Symbols", icon = "" },
 
       -- Code operations
       { "<leader>c", group = "code", icon = "" },
@@ -58,15 +56,16 @@ return {
       { "<leader>ql", desc = "Last Session", icon = "" },
       { "<leader>qd", desc = "Don't Save", icon = "" },
 
-      -- UI/View controls
-      { "<leader>1", desc = "Explorer", icon = "" },
-      { "<leader>2", desc = "Diagnostics", icon = "" },
-      { "<leader>3", desc = "Git Status", icon = "" },
-      { "<leader>4", desc = "Terminal", icon = "" },
+      -- View controls (using explicit commands)
+      { "<leader>E", desc = "Explorer (NeoTree)", icon = "" },
+      { "<leader>ft", desc = "Terminal", icon = "" },
 
-      -- Navigation
-      { "<leader>[", desc = "Navigate Back", icon = "" },
-      { "<leader>]", desc = "Navigate Forward", icon = "" },
+      -- Buffer navigation
+      { "<leader>bh", desc = "Navigate Back", icon = "" },
+      { "<leader>bl", desc = "Navigate Forward", icon = "" },
+
+      -- Duplicate (capital D to avoid conflicts)
+      { "<leader>D", desc = "Duplicate Line", icon = "" },
     })
 
     return opts
