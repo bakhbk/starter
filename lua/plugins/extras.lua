@@ -22,10 +22,11 @@ return {
   },
 
   -- Configure LazyVim to use Monokai Pro
+  -- Ensure LazyVim uses the chosen colorscheme (overridden by lua/plugins/colorscheme.lua)
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "monokai-pro",
+      colorscheme = "tokyonight",
     },
   },
 
