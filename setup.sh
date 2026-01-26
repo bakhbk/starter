@@ -1,212 +1,149 @@
 #!/bin/bash
-
 set -e
 
-echo "🚀 Starting Neovim Development Environment Setup..."
+echo "🚀 Neovim Development Environment Setup"
 echo ""
 
-# Color codes for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
-# Function to print status
-print_status() {
-    if [ $1 -eq 0 ]; then
-        echo -e "${GREEN}✓${NC} $2"
-    else
-        echo -e "${RED}✗${NC} $2"
-    fi
-}
-
-# Function to print warning
-print_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
-}
-
-# Detect OS
-OS="unknown"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macos"
+# Detect OS and package manager
+if command -v brew >/dev/null 2>&1; then
+    echo "Using Homebrew..."
+    PKG_MGR="brew"
+    INSTALL_CMD="brew install"
+    UPDATE_CMD="brew update"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Homebrew not found on macOS!"
+    echo "Please install Homebrew first: https://brew.sh/"
+    exit 1
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    OS="linux"
-fi
-
-echo "📦 Checking system dependencies..."
-echo ""
-
-# Check Flutter SDK (optional for Flutter development)
-if command_exists flutter; then
-    print_status 0 "Flutter SDK found: $(flutter --version | head -n1)"
+    echo "Using apt-get (Homebrew not available)..."
+    PKG_MGR="apt"
+    INSTALL_CMD="sudo apt-get install -y"
+    UPDATE_CMD="sudo apt-get update"
 else
-    print_status 1 "Flutter SDK not found (optional - skip if not using Flutter)"
-    print_warning "Install from: https://docs.flutter.dev/get-started/install"
-fi
-
-# Check Dart SDK (optional - comes with Flutter)
-if command_exists dart; then
-    print_status 0 "Dart SDK found: $(dart --version 2>&1 | head -n1)"
-else
-    print_status 1 "Dart SDK not found (optional - comes with Flutter)"
-    print_warning "Dart comes with Flutter SDK"
-fi
-
-# Check Node.js
-if command_exists node; then
-    NODE_VERSION=$(node --version)
-    print_status 0 "Node.js found: $NODE_VERSION"
-else
-    print_status 1 "Node.js not found"
-    if [ "$OS" == "macos" ]; then
-        print_warning "Install with: brew install node"
-    else
-        print_warning "Install from: https://nodejs.org/"
-    fi
-    MISSING_DEPS=true
-fi
-
-# Check npm
-if command_exists npm; then
-    print_status 0 "npm found: $(npm --version)"
-else
-    print_status 1 "npm not found (comes with Node.js)"
-    MISSING_DEPS=true
-fi
-
-# Check Python
-if command_exists python3; then
-    PYTHON_VERSION=$(python3 --version)
-    print_status 0 "Python found: $PYTHON_VERSION"
-else
-    print_status 1 "Python 3 not found"
-    if [ "$OS" == "macos" ]; then
-        print_warning "Install with: brew install python3"
-    else
-        print_warning "Install from: https://www.python.org/"
-    fi
-    MISSING_DEPS=true
-fi
-
-# Check pip
-if command_exists pip3; then
-    print_status 0 "pip3 found"
-else
-    print_status 1 "pip3 not found"
-    MISSING_DEPS=true
-fi
-
-# Check Neovim
-if command_exists nvim; then
-    NVIM_VERSION=$(nvim --version | head -n1)
-    print_status 0 "Neovim found: $NVIM_VERSION"
-else
-    print_status 1 "Neovim not found"
-    if [ "$OS" == "macos" ]; then
-        print_warning "Install with: brew install neovim"
-    else
-        print_warning "Install from: https://neovim.io/"
-    fi
-    MISSING_DEPS=true
-fi
-
-# Check Git
-if command_exists git; then
-    print_status 0 "Git found: $(git --version)"
-else
-    print_status 1 "Git not found"
-    MISSING_DEPS=true
-fi
-
-echo ""
-
-# Exit if critical dependencies are missing
-if [ "$MISSING_DEPS" = true ]; then
-    echo -e "${RED}❌ Critical dependencies missing. Please install them first.${NC}"
-    echo "See SETUP.md for detailed installation instructions."
-    echo ""
-    echo "Note: Flutter/Dart are optional if you only need TypeScript/Python development."
+    echo "Error: Unsupported OS"
     exit 1
 fi
 
-echo "✅ All required dependencies found!"
+# Install function
+install_pkg() {
+    local pkg="$1"
+    echo "Installing $pkg..."
+    
+    if [[ "$PKG_MGR" == "apt" ]]; then
+        eval "$UPDATE_CMD"
+    fi
+    
+    eval "$INSTALL_CMD $pkg"
+}
+
+# Check and install if missing
+check_install() {
+    local name="$1"
+    local pkg_brew="${2:-$1}"
+    local pkg_apt="${3:-$pkg_brew}"
+    local post_install="${4:-}"
+    
+    if command -v "$name" >/dev/null 2>&1; then
+        echo "✓ $name"
+        return 0
+    else
+        echo "✗ $name - installing..."
+        
+        if [[ "$PKG_MGR" == "brew" ]]; then
+            install_pkg "$pkg_brew"
+        else
+            install_pkg "$pkg_apt"
+        fi
+        
+        # Выполнить post-install команду если есть
+        if [[ -n "$post_install" ]]; then
+            eval "$post_install"
+        fi
+        
+        return $?
+    fi
+}
+
+echo "=== REQUIRED DEPENDENCIES ==="
 echo ""
 
-# Install npm global packages
-echo "📦 Installing npm global packages..."
-if npm list -g live-server >/dev/null 2>&1; then
-    print_status 0 "live-server already installed"
-else
-    echo "Installing live-server..."
-    if npm install -g live-server; then
-        print_status 0 "live-server installed"
+# System packages
+check_install "node" "node" "nodejs"
+check_install "npm" "npm" "npm"
+check_install "python3" "python3" "python3"
+check_install "nvim" "neovim" "neovim"
+check_install "git" "git" "git"
+
+# pip3 special handling
+if ! command -v pip3 >/dev/null 2>&1; then
+    echo "✗ pip3 - installing..."
+    if [[ "$PKG_MGR" == "brew" ]]; then
+        # На macOS pip3 идет с python3
+        echo "Note: pip3 comes with python3 on macOS"
     else
-        print_status 1 "live-server installation failed (may need sudo)"
+        install_pkg "python3-pip"
     fi
+else
+    echo "✓ pip3"
 fi
 
-if npm list -g prettier >/dev/null 2>&1; then
-    print_status 0 "prettier already installed"
+# fd с симлинком для Linux
+check_install "fd" "fd" "fd-find" "[[ \"$PKG_MGR\" == \"apt\" ]] && sudo ln -sf \$(which fdfind) /usr/local/bin/fd 2>/dev/null || true"
+
+# ripgrep
+check_install "rg" "ripgrep" "ripgrep"
+
+echo ""
+echo "=== OPTIONAL DEPENDENCIES ==="
+echo ""
+
+# Optional: Flutter/Dart
+read -p "Install Flutter & Dart for Flutter development? (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    check_install "flutter" "flutter" "flutter"
+    check_install "dart" "dart" "dart"
 else
-    echo "Installing prettier..."
-    if npm install -g prettier; then
-        print_status 0 "prettier installed"
-    else
-        print_status 1 "prettier installation failed (may need sudo)"
-    fi
+    echo "Skipping Flutter/Dart"
 fi
 
 echo ""
+echo "=== GLOBAL PACKAGES ==="
+echo ""
 
-# Install Python packages
-echo "📦 Installing Python packages..."
+# npm packages
+echo "Installing npm packages..."
+for pkg in live-server prettier; do
+    if npm list -g "$pkg" >/dev/null 2>&1; then
+        echo "✓ $pkg"
+    else
+        echo "Installing $pkg..."
+        npm install -g "$pkg" || echo "⚠ Failed to install $pkg"
+    fi
+done
+
+# Python packages
+echo ""
+echo "Installing Python packages..."
 if python3 -c "import black" 2>/dev/null; then
-    print_status 0 "black already installed"
+    echo "✓ black"
 else
     echo "Installing black..."
-    if pip3 install black; then
-        print_status 0 "black installed"
-    else
-        print_status 1 "black installation failed (try: pip3 install --user black)"
-    fi
+    pip3 install black || echo "⚠ Failed to install black"
 fi
 
 echo ""
-
-# Bootstrap Neovim
-echo "🔧 Bootstrapping Neovim configuration..."
-echo "This will:"
-echo "  - Install lazy.nvim plugin manager"
-echo "  - Install all plugins from lazy-lock.json"
-echo "  - Install Mason tools (LSPs, formatters, linters)"
+echo "=== NEOVIM CONFIGURATION ==="
 echo ""
-echo "Press ENTER to continue or Ctrl+C to cancel..."
-read -r _
 
-# Run Neovim headless to install plugins
-echo "Installing Neovim plugins..."
-nvim --headless "+Lazy! sync" +qa
-
-print_status $? "Neovim plugins installed"
+echo "Setting up Neovim plugins..."
+if nvim --headless "+Lazy! sync" +qa 2>&1 | grep -q "error"; then
+    echo "Trying alternative method..."
+    nvim --headless "+Lazy sync" +qa
+fi
 
 echo ""
-echo "✨ Setup complete!"
+echo "✅ SETUP COMPLETE!"
 echo ""
-echo "Next steps:"
-echo "  1. Run 'nvim' to start Neovim"
-echo "  2. Mason will auto-install configured tools on first launch"
-echo "  3. For Flutter development, run 'flutter doctor' to verify setup"
-echo ""
-echo "Key shortcuts:"
-echo "  - <leader> is <Space> by default"
-echo "  - <Space>fr : Flutter run"
-echo "  - <Space>tt : Run nearest test"
-echo "  - <F5>      : Start debugging"
-echo "  - <Ctrl-\\> : Toggle terminal"
-echo ""
-echo "See lua/plugins/ for complete plugin configuration"
+echo "Package manager used: $PKG_MGR"
+echo "You can now start Neovim with 'nvim'. Enjoy coding!"
