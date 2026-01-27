@@ -68,11 +68,22 @@ echo "=== REQUIRED DEPENDENCIES ==="
 echo ""
 
 # System packages
+# Node.js: runtime for many JS tools, LSPs and npm-based formatters/linters
 check_install "node" "node" "nodejs"
+# npm: installs global JS tooling (prettier, live-server, etc.)
 check_install "npm" "npm" "npm"
+# Python3: used by formatters/linters and Python LSP servers
 check_install "python3" "python3" "python3"
+# Neovim: the editor itself
 check_install "nvim" "neovim" "neovim"
+# Git: required for plugin checkout and version control
 check_install "git" "git" "git"
+# LuaRocks: installs Lua rocks required by some Neovim plugins (hererocks/backends)
+check_install "luarocks" "luarocks" "luarocks"
+# fd: fast file finder used by many utilities (on Debian/Ubuntu package is fdfind)
+check_install "fd" "fd" "fd-find" "[[ \"$PKG_MGR\" == \"apt\" ]] && sudo ln -sf \$(which fdfind) /usr/local/bin/fd 2>/dev/null || true"
+# ripgrep: fast text search used by telescope and other tools
+check_install "rg" "ripgrep" "ripgrep"
 
 # pip3 special handling
 if ! command -v pip3 >/dev/null 2>&1; then
@@ -87,11 +98,7 @@ else
     echo "✓ pip3"
 fi
 
-# fd с симлинком для Linux
-check_install "fd" "fd" "fd-find" "[[ \"$PKG_MGR\" == \"apt\" ]] && sudo ln -sf \$(which fdfind) /usr/local/bin/fd 2>/dev/null || true"
 
-# ripgrep
-check_install "rg" "ripgrep" "ripgrep"
 
 echo ""
 echo "=== OPTIONAL DEPENDENCIES ==="
