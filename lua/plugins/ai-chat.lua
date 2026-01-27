@@ -82,26 +82,5 @@ return {
     },
   },
 
-  -- Which-key groups for AI
-  {
-    "folke/which-key.nvim",
-    opts = function(_, opts)
-      if not opts.spec then
-        opts.spec = {}
-      end
-      vim.list_extend(opts.spec, {
-        { "<leader>a", group = "ai/ollama", icon = "🤖" },
-        { "<leader>ai", desc = "Ollama Quick Chat", icon = "" },
-        { "<leader>ac", desc = "Ollama Chat Window", icon = "" },
-        { "<leader>ag", desc = "Generate Code", icon = "" },
-        { "<leader>ae", desc = "Enhance Code", icon = "" },
-        { "<leader>ar", desc = "Review Code", icon = "" },
-        { "<leader>ax", desc = "Fix Grammar", icon = "" },
-        { "<leader>aa", desc = "CodeCompanion Actions", icon = "🤖" },
-        { "<leader>at", desc = "Toggle CodeCompanion", icon = "💬" },
-        { "<leader>ao", desc = "Open CodeCompanion", icon = "💬" },
-      })
-      return opts
-    end,
-  },
+  -- which-key entries moved to lua/plugins/which-key.lua
 }
