@@ -134,9 +134,9 @@ return {
   {
     "mfussenegger/nvim-dap",
     optional = true,
-    dependencies = {
+      dependencies = {
       {
-        "williamboman/mason.nvim",
+        "mason-org/mason.nvim",
         opts = { ensure_installed = { "dart-debug-adapter" } },
       },
     },
