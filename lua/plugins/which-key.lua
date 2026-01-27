@@ -43,6 +43,18 @@ return {
       { "<leader>mp", desc = "Preview (buffer)", icon = "" },
       { "<leader>mb", desc = "Preview (browser)", icon = "" },
 
+      -- AI / Ollama
+      { "<leader>a", group = "ai/ollama", icon = "🤖" },
+      { "<leader>ai", desc = "Ollama Quick Chat", icon = "" },
+      { "<leader>ac", desc = "Ollama Chat Window", icon = "" },
+      { "<leader>ag", desc = "Generate Code", icon = "" },
+      { "<leader>ae", desc = "Enhance Code", icon = "" },
+      { "<leader>ar", desc = "Review Code", icon = "" },
+      { "<leader>ax", desc = "Fix Grammar", icon = "" },
+      { "<leader>aa", desc = "CodeCompanion Actions", icon = "🤖" },
+      { "<leader>at", desc = "Toggle CodeCompanion", icon = "💬" },
+      { "<leader>ao", desc = "Open CodeCompanion", icon = "💬" },
+
       -- Package management
       { "<leader>p", group = "package", icon = "󰏗" },
       { "<leader>ps", desc = "Show Versions", icon = "" },

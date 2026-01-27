@@ -195,19 +195,7 @@ return {
   },
 
   -- Navic for breadcrumbs (integrate with lualine)
-  {
-    "SmiteshP/nvim-navic",
-    lazy = true,
-    opts = {
-      lsp = {
-        auto_attach = true,
-      },
-      highlight = true,
-      separator = " > ",
-      depth_limit = 5,
-      lazy_update_context = true,
-    },
-  },
+  -- Navic configuration centralized in lua/plugins/navic.lua
 
   -- Integrate navic breadcrumbs into lualine
   {
