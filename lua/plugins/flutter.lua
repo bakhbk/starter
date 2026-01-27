@@ -70,11 +70,6 @@ return {
         on_attach = function(client, bufnr)
           local opts = { buffer = bufnr, noremap = true, silent = true }
 
-          -- Attach navic for breadcrumbs
-          if client.server_capabilities.documentSymbolProvider then
-            require("nvim-navic").attach(client, bufnr)
-          end
-
           -- LSP Navigation (standard Neovim bindings)
           vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
@@ -197,25 +192,5 @@ return {
   -- Navic for breadcrumbs (integrate with lualine)
   -- Navic configuration centralized in lua/plugins/navic.lua
 
-  -- Integrate navic breadcrumbs into lualine
-  {
-    "nvim-lualine/lualine.nvim",
-    optional = true,
-    opts = function(_, opts)
-      opts.winbar = {
-        lualine_c = {
-          {
-            "navic",
-            color_correction = "dynamic",
-            navic_opts = {
-              separator = " > ",
-            },
-          },
-        },
-      }
-      opts.inactive_winbar = {
-        lualine_c = { "filename" },
-      }
-    end,
-  },
+  -- lualine is centralized in lua/plugins/lualine.lua
 }
