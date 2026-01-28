@@ -85,19 +85,8 @@ check_install "fd" "fd" "fd-find" "[[ \"$PKG_MGR\" == \"apt\" ]] && sudo ln -sf 
 # ripgrep: fast text search used by telescope and other tools
 check_install "rg" "ripgrep" "ripgrep"
 
-# pip3 special handling
-if ! command -v pip3 >/dev/null 2>&1; then
-    echo "✗ pip3 - installing..."
-    if [[ "$PKG_MGR" == "brew" ]]; then
-        # На macOS pip3 идет с python3
-        echo "Note: pip3 comes with python3 on macOS"
-    else
-        install_pkg "python3-pip"
-    fi
-else
-    echo "✓ pip3"
-fi
-
+# Nerd Font installation 
+source ./scripts/install_nerd_font.sh
 
 
 echo ""
@@ -128,16 +117,6 @@ for pkg in live-server prettier; do
         npm install -g "$pkg" || echo "⚠ Failed to install $pkg"
     fi
 done
-
-# Python packages
-echo ""
-echo "Installing Python packages..."
-if python3 -c "import black" 2>/dev/null; then
-    echo "✓ black"
-else
-    echo "Installing black..."
-    pip3 install black || echo "⚠ Failed to install black"
-fi
 
 echo ""
 echo "=== NEOVIM CONFIGURATION ==="
