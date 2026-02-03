@@ -75,7 +75,8 @@ check_install "npm" "npm" "npm"
 # Python3: used by formatters/linters and Python LSP servers
 check_install "python3" "python3" "python3"
 # Neovim: the editor itself
-check_install "nvim" "neovim" "neovim"
+# Use dedicated installer to ensure Neovim >= 0.11.2 on macOS/Ubuntu
+bash ./scripts/install_neovim.sh
 # Git: required for plugin checkout and version control
 check_install "git" "git" "git"
 # LuaRocks: installs Lua rocks required by some Neovim plugins (hererocks/backends)
