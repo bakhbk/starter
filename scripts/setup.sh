@@ -167,6 +167,11 @@ echo ""
 echo "=== GLOBAL PACKAGES ==="
 echo ""
 
+# Configure npm to not ask for script approval
+if ! grep -q "scripts-prepend-node-path" ~/.npmrc 2>/dev/null; then
+    echo "scripts-prepend-node-path=true" >> ~/.npmrc
+fi
+
 # npm packages - formatters, linters and LSP servers
 echo "Installing npm packages..."
 for pkg in live-server prettier typescript-language-server graphql-language-server yaml-language-server bash-language-server; do
