@@ -70,7 +70,14 @@ return {{'olimorris/codecompanion.nvim'}, {"github/copilot.vim"}, {"loctvl842/mo
     "neovim/nvim-lspconfig",
     opts = {
         servers = {
-            pyright = {}
+            pyright = {},
+            gopls = {},
+            intelephense = {},
+            dockerls = {},
+            yamlls = {},
+            bashls = {},
+            graphql = {},
+            taplo = {}
         }
     }
 }, {
@@ -110,7 +117,7 @@ return {{'olimorris/codecompanion.nvim'}, {"github/copilot.vim"}, {"loctvl842/mo
 }, {
     "mason-org/mason.nvim",
     opts = {
-        ensure_installed = {"stylua", "shellcheck", "shfmt", "flake8", "prettier", "black"}
+        ensure_installed = {"stylua", "shellcheck", "shfmt", "flake8", "prettier", "black", "gopls", "typescript-language-server", "intelephense", "yaml-language-server", "bash-language-server", "graphql-language-server", "taplo", "java-language-server", "google-java-format", "biome"}
     }
 }, {
 
@@ -118,7 +125,15 @@ return {{'olimorris/codecompanion.nvim'}, {"github/copilot.vim"}, {"loctvl842/mo
     opts = {
         formatters_by_ft = {
             dart = {"dart_format"},
+            dockerfile = {"dockerfile-language-server"},
+            go = {"gofmt", "goimports"},
+            graphql = {"prettier"},
+
+            javascriptreact = {"biome"},
+            json = {"biome"},
+            kotlin = {"ktlint"},
             lua = {"stylua"},
+            php = {"php-cs-fixer"},
             python = {"black"},
             jsx = {"prettier"},
             javascript = {"prettier"},
