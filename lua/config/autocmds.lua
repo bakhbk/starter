@@ -17,8 +17,8 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.opt.wrap = true          -- длинные строки всё равно переносятся
         vim.opt.textwidth = 0        -- не ломать таблицы переносом
         vim.opt.spell = false        -- красные волнистые подчёркивания
-        vim.opt.list = "trail:leading"
-        vim.cmd("RenderMarkdown enable")
+        vim.opt.list = true          -- показывать trailing пробелы
+        pcall(vim.cmd, "RenderMarkdown enable")
     end
 })
 
