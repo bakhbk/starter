@@ -76,7 +76,6 @@ return {{'olimorris/codecompanion.nvim'}, {"github/copilot.vim"}, {"loctvl842/mo
             dockerls = {},
             yamlls = {},
             bashls = {},
-            graphql = {},
             taplo = {}
         }
     }
@@ -117,7 +116,7 @@ return {{'olimorris/codecompanion.nvim'}, {"github/copilot.vim"}, {"loctvl842/mo
 }, {
     "mason-org/mason.nvim",
     opts = {
-        ensure_installed = {"stylua", "shellcheck", "shfmt", "flake8", "prettier", "black", "gopls", "typescript-language-server", "intelephense", "yaml-language-server", "bash-language-server", "graphql-language-server", "taplo", "java-language-server", "google-java-format", "biome"}
+        ensure_installed = {"stylua", "shellcheck", "shfmt", "flake8", "prettier", "black", "gopls", "typescript-language-server", "intelephense", "yaml-language-server", "bash-language-server", "taplo", "java-language-server", "google-java-format", "biome"}
     }
 }, {
 

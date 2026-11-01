@@ -52,14 +52,6 @@ return {
         auto_open = false,
       },
       lsp = {
-        color = {
-          enabled = true,
-          background = false,
-          background_color = nil,
-          foreground = false,
-          virtual_text = true,
-          virtual_text_str = "■",
-        },
         settings = {
           showTodos = true,
           completeFunctionCalls = true,
