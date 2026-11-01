@@ -10,6 +10,18 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
 })
 
+-- Markdown: читаемость таблиц и отсутствие шума
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "markdown",
+    callback = function()
+        vim.opt.wrap = true          -- длинные строки всё равно переносятся
+        vim.opt.textwidth = 0        -- не ломать таблицы переносом
+        vim.opt.spell = false        -- красные волнистые подчёркивания
+        vim.opt.list = "trail:leading"
+        vim.cmd("RenderMarkdown enable")
+    end
+})
+
 -- Auto-save for Flutter hot reload
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI"}, {
     pattern = "*.dart",
